@@ -23,18 +23,20 @@ function RatingWidget({ value = 0, onChange, readOnly = false }) {
     if (readOnly) return
 
     switch (e.key) {
-      case 'ArrowRight':
+      case 'ArrowRight': {
         e.preventDefault()
         const nextRating = Math.min(5, (hoverValue || value) + 1)
         setHoverValue(nextRating)
         onChange?.(nextRating)
         break
-      case 'ArrowLeft':
+      }
+      case 'ArrowLeft': {
         e.preventDefault()
         const prevRating = Math.max(1, (hoverValue || value) - 1)
         setHoverValue(prevRating)
         onChange?.(prevRating)
         break
+      }
       case 'Home':
         e.preventDefault()
         setHoverValue(1)

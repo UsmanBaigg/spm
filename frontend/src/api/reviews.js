@@ -3,7 +3,113 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 export async function listReviews({ targetType, targetId, page = 1, limit = 10, sort = 'newest' }) {
   if (!isSupabaseConfigured) {
-    return { reviews: [], totalCount: 0, totalPages: 1 }
+    // Mock data for demo mode
+    const mockReviews = {
+      user: {
+        '1': [
+          {
+            id: 1,
+            rating: 5,
+            comment: "Excellent user! Very responsive and professional. Great communication throughout the entire process.",
+            created_at: "2026-03-15T10:30:00Z",
+            reviewer_name: "Sarah Johnson",
+            reviewer_avatar: "https://picsum.photos/seed/sarah/40/40.jpg"
+          },
+          {
+            id: 2,
+            rating: 4,
+            comment: "Good experience overall. Would work with again. Minor delays but quality was good.",
+            created_at: "2026-03-12T14:20:00Z",
+            reviewer_name: "Mike Chen",
+            reviewer_avatar: "https://picsum.photos/seed/mike/40/40.jpg"
+          },
+          {
+            id: 3,
+            rating: 5,
+            comment: "Outstanding service! Exceeded my expectations. Highly recommended!",
+            created_at: "2026-03-10T09:15:00Z",
+            reviewer_name: "Emily Davis",
+            reviewer_avatar: "https://picsum.photos/seed/emily/40/40.jpg"
+          },
+          {
+            id: 4,
+            rating: 3,
+            comment: "Average experience. Communication could be better.",
+            created_at: "2026-03-08T16:45:00Z",
+            reviewer_name: "Robert Wilson",
+            reviewer_avatar: "https://picsum.photos/seed/robert/40/40.jpg"
+          },
+          {
+            id: 5,
+            rating: 5,
+            comment: "Perfect! Delivered on time and great quality. Will definitely use again.",
+            created_at: "2026-03-05T11:30:00Z",
+            reviewer_name: "Lisa Anderson",
+            reviewer_avatar: "https://picsum.photos/seed/lisa/40/40.jpg"
+          }
+        ],
+        '2': [
+          {
+            id: 6,
+            rating: 4,
+            comment: "Good work, met all requirements. Would recommend.",
+            created_at: "2026-03-14T13:10:00Z",
+            reviewer_name: "Tom Brown",
+            reviewer_avatar: "https://picsum.photos/seed/tom/40/40.jpg"
+          }
+        ]
+      },
+      service: {
+        '1': [
+          {
+            id: 7,
+            rating: 5,
+            comment: "Exceptional service! Very knowledgeable and professional.",
+            created_at: "2026-03-16T08:20:00Z",
+            reviewer_name: "Jennifer Lee",
+            reviewer_avatar: "https://picsum.photos/seed/jennifer/40/40.jpg"
+          },
+          {
+            id: 8,
+            rating: 4,
+            comment: "Very good service, delivered as promised.",
+            created_at: "2026-03-13T15:30:00Z",
+            reviewer_name: "David Martinez",
+            reviewer_avatar: "https://picsum.photos/seed/david/40/40.jpg"
+          }
+        ]
+      },
+      marketplace: {
+        '1': [
+          {
+            id: 9,
+            rating: 4,
+            comment: "Great product, exactly as described. Fast shipping!",
+            created_at: "2026-03-17T12:00:00Z",
+            reviewer_name: "Amanda White",
+            reviewer_avatar: "https://picsum.photos/seed/amanda/40/40.jpg"
+          },
+          {
+            id: 10,
+            rating: 3,
+            comment: "Product is okay, but shipping took longer than expected.",
+            created_at: "2026-03-11T10:45:00Z",
+            reviewer_name: "Chris Taylor",
+            reviewer_avatar: "https://picsum.photos/seed/chris/40/40.jpg"
+          }
+        ]
+      }
+    }
+
+    const reviews = mockReviews[targetType]?.[targetId] || []
+    const totalCount = reviews.length
+    const totalPages = Math.ceil(totalCount / limit)
+    
+    return {
+      reviews,
+      totalCount,
+      totalPages
+    }
   }
 
   let query = supabase

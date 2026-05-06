@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import RatingWidget from '../rating/RatingWidget'
@@ -22,8 +22,8 @@ function ReviewForm({
   const {
     register,
     handleSubmit,
-    setValue,
-    watch,
+    control,
+    getValues,
     reset,
     formState: { errors, isSubmitting },
   } = useForm({
@@ -71,9 +71,15 @@ function ReviewForm({
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Rating <span className="text-red-500">*</span>
           </label>
-          <RatingWidget
-            value={watch('rating')}
-            onChange={(value) => setValue('rating', value)}
+          <Controller
+            name="rating"
+            control={control}
+            render={({ field }) => (
+              <RatingWidget
+                value={field.value}
+                onChange={field.onChange}
+              />
+            )}
           />
           {errors.rating && (
             <p className="mt-1 text-sm text-red-600">{errors.rating.message}</p>
@@ -96,7 +102,7 @@ function ReviewForm({
               <p className="text-sm text-red-600">{errors.comment.message}</p>
             )}
             <p className="text-sm text-gray-500 ml-auto">
-              {watch('comment')?.length || 0}/800
+              {getValues('comment')?.length || 0}/800
             </p>
           </div>
         </div>

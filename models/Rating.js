@@ -86,6 +86,13 @@ ratingSchema.index({ rateeId: 1, createdAt: -1 });
 ratingSchema.index({ raterId: 1, createdAt: -1 });
 ratingSchema.index({ status: 1 });
 
+// Additional performance indexes
+ratingSchema.index({ rateeId: 1, status: 1, createdAt: -1 });
+ratingSchema.index({ context: 1, status: 1, createdAt: -1 });
+ratingSchema.index({ stars: 1, status: 1 });
+ratingSchema.index({ contextId: 1, status: 1 });
+ratingSchema.index({ isPinned: 1, createdAt: -1 });
+
 // Virtual for time since creation
 ratingSchema.virtual('daysOld').get(function () {
   const now = new Date();

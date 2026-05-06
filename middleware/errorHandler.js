@@ -1,8 +1,10 @@
 /**
  * Error handling middleware
  */
+import { logError } from './logging.js';
+
 export const errorHandler = (err, req, res, next) => {
-  console.error('Error:', err);
+  logError(err, req);
 
   // Mongoose validation error
   if (err.name === 'ValidationError') {
