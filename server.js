@@ -37,14 +37,19 @@ app.use((req, res, next) => {
 });
 
 // Database connection
-mongoose.connect(MONGODB_URI)
-  .then(() => {
+async function connectToMongo() {
+  try {
+    await mongoose.connect(MONGODB_URI);
     console.log('✅ MongoDB connected successfully');
-  })
-  .catch((err) => {
-    console.error('❌ MongoDB connection error:', err);
-    process.exit(1);
-  });
+  } catch (err) {
+    // Don't crash the whole API if Mongo isn't up yet; we can retry.
+    // Endpoints that require DB data will naturally fail until the connection is ready.
+    console.error('❌ MongoDB connection error (will retry):', err?.message || err);
+    setTimeout(connectToMongo, 5000);
+  }
+}
+
+connectToMongo();
 
 // API Documentation
 app.use('/api-docs', swaggerUi.serve);
