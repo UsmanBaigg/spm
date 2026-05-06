@@ -1,11 +1,13 @@
 import express from 'express';
-import mongoose from 'mongoose';
+import { supabase } from './config/supabase.js';
 import cors from 'cors';
 import helmet from 'helmet';
 import 'express-async-errors';
 import dotenv from 'dotenv';
 import swaggerUi from 'swagger-ui-express';
+import prometheus from 'prom-client';
 
+import MetricsCollector from './monitoring/metrics.js';
 import { specs } from './config/swagger.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 import { requestId, requestLogger } from './middleware/logging.js';
@@ -21,10 +23,10 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/bring-trust-rating';
 
 // Middleware
 app.use(helmet());
+app.use(MetricsCollector.middleware());
 app.use(cors({
   origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000', 'http://localhost:5173'],
   credentials: true,
@@ -41,20 +43,8 @@ app.use(generalLimiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
-// Database connection
-async function connectToMongo() {
-  try {
-    await mongoose.connect(MONGODB_URI);
-    console.log('✅ MongoDB connected successfully');
-  } catch (err) {
-    // Don't crash the whole API if Mongo isn't up yet; we can retry.
-    // Endpoints that require DB data will naturally fail until the connection is ready.
-    console.error('❌ MongoDB connection error (will retry):', err?.message || err);
-    setTimeout(connectToMongo, 5000);
-  }
-}
-
-connectToMongo();
+// Supabase is initialized via config/supabase.js
+console.log('✅ Supabase client initialized');
 
 // API Documentation
 app.use('/api-docs', swaggerUi.serve);
@@ -63,6 +53,16 @@ app.get('/api-docs', swaggerUi.setup(specs, {
     persistAuthorization: true,
   },
 }));
+
+// Prometheus Metrics endpoint
+app.get('/metrics', async (req, res) => {
+  try {
+    res.set('Content-Type', prometheus.register.contentType);
+    res.end(await prometheus.register.metrics());
+  } catch (ex) {
+    res.status(500).end(ex);
+  }
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -118,10 +118,7 @@ process.on('SIGTERM', () => {
   console.log('SIGTERM signal received: closing HTTP server');
   server.close(() => {
     console.log('HTTP server closed');
-    mongoose.connection.close(false, () => {
-      console.log('MongoDB connection closed');
-      process.exit(0);
-    });
+    process.exit(0);
   });
 });
 
