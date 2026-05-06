@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trust-rating-frontend
+  namespace: trust-rating
+  labels:
+    app: trust-rating-frontend
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: trust-rating-frontend
+  template:
+    metadata:
+      labels:
+        app: trust-rating-frontend
+        version: v1
+    spec:
+      containers:
+      - name: frontend
+        image: ghcr.io/usmanbaigg/spm-frontend:latest
+        ports:
+        - containerPort: 80
+          name: http
+        env:
+        - name: VITE_API_URL
+          value: "http://trust-rating-backend-service:3001"
+        - name: VITE_SUPABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: supabase-url
+        - name: VITE_SUPABASE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: supabase-key
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        fsGroup: 101
+      imagePullSecrets:
+      - name: ghcr-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trust-rating-frontend-service
+  namespace: trust-rating
+  labels:
+    app: trust-rating-frontend
+spec:
+  selector:
+    app: trust-rating-frontend
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+    protocol: TCP
+  type: ClusterIP
