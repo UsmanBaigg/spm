@@ -15,6 +15,7 @@ describe('API Integration Tests', () => {
     await setupTestDatabase();
     
     // Setup test user and get auth token
+    /* eslint-disable-next-line no-console */
     const loginResponse = await request(app)
       .post('/api/v1/auth/login')
       .send({
@@ -23,6 +24,7 @@ describe('API Integration Tests', () => {
       });
 
     if (loginResponse.status === 200) {
+      /* eslint-disable-next-line no-console */
       authToken = loginResponse.body.data.tokens.accessToken;
       testUser = loginResponse.body.data.user;
     }
@@ -34,6 +36,7 @@ describe('API Integration Tests', () => {
 
   describe('Authentication Integration', () => {
     test('should authenticate user successfully', async () => {
+      /* eslint-disable-next-line no-console */
       const response = await request(app)
         .post('/api/v1/auth/login')
         .send({
