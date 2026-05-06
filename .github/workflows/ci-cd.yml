@@ -49,10 +49,10 @@ jobs:
         cd frontend && npm ci
     
     - name: Run ESLint
-      run: npm run lint
+      run: npx eslint . --ext .js,.jsx,.ts,.tsx
     
     - name: Run frontend linting
-      run: cd frontend && npm run lint
+      run: cd frontend && npx eslint . --ext .js,.jsx,.ts,.tsx
     
     - name: Check code formatting
       run: npm run format:check || echo "Format check skipped"
