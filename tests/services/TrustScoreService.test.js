@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 /**
  * Unit tests for TrustScoreService
  */
@@ -146,3 +147,4 @@ describe('TrustScoreService', () => {
     });
   });
 });
+

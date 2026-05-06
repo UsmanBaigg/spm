@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 /**
  * Unit tests for RatingService
  */
@@ -113,3 +114,4 @@ describe('RatingService', () => {
     });
   });
 });
+
