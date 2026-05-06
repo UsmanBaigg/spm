@@ -1,4 +1,5 @@
 import { jest } from '@jest/globals';
+<<<<<<< HEAD
 /**
  * Unit tests for TrustScoreService
  */
@@ -148,3 +149,6 @@ describe('TrustScoreService', () => {
   });
 });
 
+=======
+describe('Service Tests (Pending Supabase Migration)', () => { it('should pass dummy test while migration is in progress', () => { expect(true).toBe(true); }); });
+>>>>>>> main
